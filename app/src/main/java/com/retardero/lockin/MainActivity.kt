@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.Destination
 import com.retardero.lockin.ui.theme.LockinTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,28 +20,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-        LockinTheme {
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                DestinationsNavHost(
-                    navGraph = NavGraphs.root,
-                    modifier = Modifier.padding(innerPadding))
+            LockinTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    DestinationsNavHost(
+                        navGraph = NavGraphs.root,
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LockinTheme {
-        Greeting("Android")
     }
 }
