@@ -18,13 +18,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            LockinTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+        LockinTheme {
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                DestinationsNavHost(
+                    navGraph = NavGraphs.root,
+                    modifier = Modifier.padding(innerPadding))
             }
         }
     }
