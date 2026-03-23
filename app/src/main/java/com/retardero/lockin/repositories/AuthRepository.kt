@@ -23,8 +23,9 @@ class AuthRepository(
         return try {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setServerClientId("1064628142464-sv1h0vnlgtpgocbgcnl2eqq5rbi4vsvo.apps.googleusercontent.com")
-                .setAutoSelectEnabled(true)
+                .setServerClientId("1064628142464-q6rnjvupafntnirbhkf2e1n19otr8n9d.apps.googleusercontent.com")
+                .setNonce(java.util.UUID.randomUUID().toString())
+                .setAutoSelectEnabled(false)
                 .build()
 
             val request = GetCredentialRequest.Builder()
