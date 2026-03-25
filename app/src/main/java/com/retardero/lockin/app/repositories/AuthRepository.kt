@@ -1,5 +1,6 @@
-package com.retardero.lockin.repositories
+package com.retardero.lockin.app.repositories
 
+import android.app.Activity
 import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -19,12 +20,12 @@ class AuthRepository(
 ) {
     private val credentialManager = CredentialManager.create(context)
 
-    suspend fun signInWithGoogle(): Result<AuthResult> {
+    suspend fun signInWithGoogle(activity: Activity): Result<AuthResult> {
+        val credentialManager = CredentialManager.create(activity)
         return try {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
-                .setServerClientId("1064628142464-q6rnjvupafntnirbhkf2e1n19otr8n9d.apps.googleusercontent.com")
-                .setNonce(java.util.UUID.randomUUID().toString())
+                .setServerClientId("1064628142464-sv1h0vnlgtpgocbgcnl2eqq5rbi4vsvo.apps.googleusercontent.com")
                 .setAutoSelectEnabled(false)
                 .build()
 
@@ -33,7 +34,7 @@ class AuthRepository(
                 .build()
 
             val result = credentialManager.getCredential(
-                context = context,
+                context = activity,
                 request = request
             )
 

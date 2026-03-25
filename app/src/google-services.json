@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1064628142464",
+    "project_id": "lockin-85665",
+    "storage_bucket": "lockin-85665.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064628142464:android:8c33cde3d5941520fcc165",
+        "android_client_info": {
+          "package_name": "com.retardero.lockin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064628142464-q6rnjvupafntnirbhkf2e1n19otr8n9d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.retardero.lockin",
+            "certificate_hash": "2572b80c058a53ab991ee69d4e1f5e2866b5be9c"
+          }
+        },
+        {
+          "client_id": "1064628142464-sv1h0vnlgtpgocbgcnl2eqq5rbi4vsvo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxrjrOlIn6Cy_GBeL1mhFoHvEBeSN4RyE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064628142464-sv1h0vnlgtpgocbgcnl2eqq5rbi4vsvo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
