@@ -10,7 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.Composable
@@ -25,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.retardero.lockin.app.widgets.LockWidget
+import com.retardero.lockin.destinations.DetailsScreenDestination
 import com.retardero.lockin.lockList.domain.LockListViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -38,12 +45,22 @@ fun LockListScreen(navigator: DestinationsNavigator, viewModel: LockListViewMode
     }
 
     Scaffold (
-        modifier = Modifier.padding(8.dp)
+        floatingActionButton = {
+            FloatingActionButton(
+                shape = RoundedCornerShape(25),
+                onClick = { viewModel.addLock() }
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = "add new lock"
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) {
         LazyColumn (
             modifier = Modifier.clip(RoundedCornerShape(10))
                 .padding(8.dp)
-                .shadow(8.dp, RoundedCornerShape(10.dp))
                 .background(Color(0xFFD9D9D9))
                 .fillMaxWidth()
                 .fillMaxHeight(),
@@ -51,7 +68,8 @@ fun LockListScreen(navigator: DestinationsNavigator, viewModel: LockListViewMode
         ){
             items(locks) { lock ->
                 Spacer(modifier = Modifier.height(8.dp))
-                LockWidget(lock)
+                LockWidget(lock,
+                    { navigator.navigate(DetailsScreenDestination()) })
             }
         }
     }

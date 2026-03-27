@@ -7,12 +7,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class LockListViewModel:ViewModel() {
     private val locksState:MutableStateFlow<List<Lock>> = MutableStateFlow(emptyList())
     val locks: StateFlow<List<Lock>> = locksState.asStateFlow()
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    val random = Random(10)
+
 
     fun fetchLocks() {
         locksState.value = listOf<Lock>(Lock("Lock 1", "IN 1.05", true),
@@ -32,5 +36,11 @@ class LockListViewModel:ViewModel() {
                 }
             }
         }*/
+    }
+
+    fun addLock() {
+        var prev = locksState.value.toMutableList()
+        prev.add(Lock(("Lock" + random.nextInt().toString()), "No place defined", random.nextBoolean()))
+        locksState.value = prev
     }
 }
