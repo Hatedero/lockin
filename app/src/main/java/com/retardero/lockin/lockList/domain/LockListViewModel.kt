@@ -19,9 +19,9 @@ class LockListViewModel:ViewModel() {
 
 
     fun fetchLocks() {
-        locksState.value = listOf<Lock>(Lock("Lock 1", "IN 1.05", true),
-            Lock("Lock 2", "IN 1.06", false),
-            Lock("Lock 3", "2.02", true))
+        locksState.value = listOf<Lock>(Lock(0,"Lock 1", "IN 1.05", true),
+            Lock(1,"Lock 2", "IN 1.06", false),
+            Lock(2,"Lock 3", "2.02", true))
         /*viewModelScope.launch {
             val response = CardRacterRepository.getAllMultiCategoryCards()
 
@@ -40,7 +40,7 @@ class LockListViewModel:ViewModel() {
 
     fun addLock() {
         var prev = locksState.value.toMutableList()
-        prev.add(Lock(("Lock" + random.nextInt().toString()), "No place defined", random.nextBoolean()))
+        prev.add(Lock(locksState.value.size, ("Lock" + random.nextInt().toString()), "No place defined", random.nextBoolean()))
         locksState.value = prev
     }
 }

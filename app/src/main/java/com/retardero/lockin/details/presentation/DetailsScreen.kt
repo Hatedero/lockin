@@ -26,16 +26,18 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.retardero.lockin.app.widgets.LockWidget
 import com.retardero.lockin.app.widgets.TopBar
 import com.retardero.lockin.details.domain.DetailsViewModel
+import com.retardero.lockin.details.presentation.widgets.History
 import com.retardero.lockin.login.domain.LoginViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Destination()
 @Composable
 fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel = viewModel()) {
     val lock by viewModel.lock.collectAsState()
+    val logs by viewModel.logs.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchLock()
+        viewModel.fetchLock(-1)
     }
 
     Scaffold (
@@ -54,8 +56,12 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
             Spacer(modifier = Modifier.height(38.dp))
             LockWidget(
                 lock = lock,
-                onClick = {}
+                onClick = {
+                    viewModel.changeLockState()
+                }
             )
+            Spacer(modifier = Modifier.height(15.dp))
+            History(logs, lock)
         }
     }
 }
