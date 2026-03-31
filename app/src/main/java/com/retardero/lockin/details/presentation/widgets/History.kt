@@ -3,8 +3,10 @@ package com.retardero.lockin.details.presentation.widgets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,9 +29,10 @@ fun History(logs : List<Log>, lock: Lock) {
         modifier = Modifier.clip(RoundedCornerShape(10.dp))
             .fillMaxSize()
             .background(Color.Gray)
-            .padding(8.dp)
+            .padding(16.dp)
     ) {
-        Text("History for : ${lock.name}", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp))
+        Text("History for : ${lock.name}", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 30.sp))
+        Spacer(modifier = Modifier.height(8.dp))
         LazyColumn (
             modifier = Modifier.clip(RoundedCornerShape(10.dp))
                 .fillMaxSize()
@@ -42,10 +45,10 @@ fun History(logs : List<Log>, lock: Lock) {
                         Row (
                             modifier = Modifier.fillMaxWidth()
                                 .clip(RoundedCornerShape(5.dp))
-                                .background(if(logs.indexOf(log)%2==0) Color.Gray else Color.DarkGray)
                                 .padding(2.dp)
                         ) {
-                            Text(log.toString())
+                            Text(log.toString(), color = Color.DarkGray)
+                            Spacer(modifier = Modifier.height(2.dp))
                         }
                     }
             }

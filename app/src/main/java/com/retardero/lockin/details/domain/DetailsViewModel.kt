@@ -1,6 +1,7 @@
 package com.retardero.lockin.details.domain
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Timestamp
 import com.retardero.lockin.app.data.Lock
 import com.retardero.lockin.app.data.Log
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,18 +21,23 @@ class DetailsViewModel: ViewModel() {
     fun fetchLock(id : Int) {
         lockState.value = Lock(0,"Lock 1", "IN 1.05", true)
         logsState.value = listOf<Log>(
-            Log("admin", "open", 0),
-            Log("student", "close", 0),
-            Log("student", "open", 0),
-            Log("admin", "close", 0),
-            Log("admin", "open", 0),
-            Log("student", "close", 0),
-            Log("student", "open", 0),
-            Log("admin", "close", 0),
-            Log("admin", "open", 0),
-            Log("student", "close", 0),
-            Log("student", "open", 0),
-            Log("admin", "close", 0)
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
+            Log("admin", "open", Timestamp.now(),0),
         )
     }
 

@@ -60,7 +60,7 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
                     viewModel.changeLockState()
                 }
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             History(logs, lock)
         }
     }
