@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class DetailsViewModel: ViewModel() {
-    private val lockState: MutableStateFlow<Lock> = MutableStateFlow(Lock(-1,"","",false))
+    private val lockState: MutableStateFlow<Lock> = MutableStateFlow(Lock(-1,"","",false, ""))
     val lock: StateFlow<Lock> = lockState.asStateFlow()
 
     private val logsState: MutableStateFlow<List<Log>> = MutableStateFlow(emptyList())
@@ -19,7 +19,7 @@ class DetailsViewModel: ViewModel() {
     val error: StateFlow<String?> = _error.asStateFlow()
 
     fun fetchLock(id : Int) {
-        lockState.value = Lock(0,"Lock 1", "IN 1.05", true)
+        lockState.value = Lock(0,"Lock 1", "IN 1.05", true, "")
         logsState.value = listOf<Log>(
             Log("admin", "open", Timestamp.now(),0),
             Log("admin", "open", Timestamp.now(),0),

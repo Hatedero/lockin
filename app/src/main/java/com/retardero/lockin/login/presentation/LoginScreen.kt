@@ -23,6 +23,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.retardero.lockin.login.domain.AuthState
 import com.retardero.lockin.login.domain.LoginViewModel
 import com.retardero.lockin.app.repositories.AuthRepository
+import com.retardero.lockin.destinations.LockListScreenDestination
+import com.retardero.lockin.lockList.presentation.LockListScreen
 
 fun Context.findActivity(): Activity? {
     var context = this
@@ -33,7 +35,7 @@ fun Context.findActivity(): Activity? {
     return null
 }
 
-@Destination()
+@Destination(start = true)
 @Composable
 fun LoginScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
@@ -64,7 +66,10 @@ fun LoginScreen(navigator: DestinationsNavigator) {
                     Text("Try Again")
                 }
             }
-            is AuthState.Success -> Text("Welcome, ${state.user?.displayName}")
+            is AuthState.Success -> {
+                Text("Welcome, ${state.user?.displayName}")
+                navigator.navigate(LockListScreenDestination)
+            }
             else -> {
                 Button(onClick = {
                     activity?.let {

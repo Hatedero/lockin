@@ -35,7 +35,7 @@ import com.retardero.lockin.destinations.DetailsScreenDestination
 import com.retardero.lockin.lockList.domain.LockListViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Destination(start = true)
+@Destination()
 @Composable
 fun LockListScreen(navigator: DestinationsNavigator, viewModel: LockListViewModel = viewModel()) {
     val locks by viewModel.locks.collectAsState()
