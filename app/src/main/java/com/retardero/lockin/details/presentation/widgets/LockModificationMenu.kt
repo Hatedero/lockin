@@ -1,33 +1,21 @@
 package com.retardero.lockin.details.presentation.widgets
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.retardero.lockin.app.data.Lock
-import androidx.compose.runtime.Composable
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 
 @Composable
 fun LockModificationMenu(
+    lock: Lock,
     onDismiss: () -> Unit,
-                     onSave: (Lock) -> Unit,
-    lock: Lock
+    onSave: (Lock) -> Unit,
+    onDelete: (Lock) -> Unit
 ) {
-
-    val db = Firebase.firestore
-    val locksCollection = db.collection("locks")
     var name by remember { mutableStateOf(lock.name) }
     var location by remember { mutableStateOf(lock.location) }
     var password by remember { mutableStateOf(lock.password) }
@@ -64,21 +52,33 @@ fun LockModificationMenu(
             }
         },
         confirmButton = {
-            Button(
-                onClick = {
-                    val newLock = Lock(
-                        id = lock.id,
-                        name = name,
-                        location = location,
-                        password = password,
-                        status = lock.status
-                    )
-                    onSave(newLock)
-                    onDismiss()
-                },
-                enabled = name.isNotBlank()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Save")
+                TextButton(
+                    onClick = {
+                        onDelete(lock)
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                ) {
+                    Text("Delete")
+                }
+
+                Button(
+                    onClick = {
+                        val updatedLock = lock.copy(
+                            name = name,
+                            location = location,
+                            password = password
+                        )
+                        onSave(updatedLock)
+                        onDismiss()
+                    },
+                    enabled = name.isNotBlank()
+                ) {
+                    Text("Save")
+                }
             }
         },
         dismissButton = {

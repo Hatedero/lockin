@@ -53,6 +53,16 @@ class DetailsViewModel: ViewModel() {
         }
     }
 
+    suspend fun deleteLock(lockid: String) : Boolean {
+        return try {
+            locksCollection.document(lockid).delete().await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     suspend fun getAccountName(log : Log): String {
         val db = Firebase.firestore
         val usersCollection = db.collection("users")

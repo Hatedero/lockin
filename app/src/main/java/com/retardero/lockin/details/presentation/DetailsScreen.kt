@@ -83,6 +83,12 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
                     viewModel.fetchLock(lockId)
                 }
             },
+            onDelete = {
+                coroutineScope.launch {
+                    viewModel.deleteLock(lockId)
+                }
+                navigator.popBackStack()
+            },
             lock = lock
         )
     }
