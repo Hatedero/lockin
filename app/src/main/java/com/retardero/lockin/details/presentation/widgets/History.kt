@@ -1,5 +1,6 @@
 package com.retardero.lockin.details.presentation.widgets
 
+import android.content.ClipData.Item
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,8 +40,13 @@ fun History(logs : List<Log>, lock: Lock) {
                 .background(Color.LightGray)
                 .padding(8.dp)
         ) {
+            if (logs.size > 1)
+                item {
+                    Text("No logs to date.")
+                }
+            else
             logs.forEach { log ->
-                if(lock.id == log.lockId)
+                if(lock.id.equals(log.lockId))
                     item {
                         Row (
                             modifier = Modifier.fillMaxWidth()
