@@ -1,7 +1,6 @@
 package com.retardero.lockin.details.domain
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
@@ -14,7 +13,6 @@ import android.bluetooth.le.ScanResult
 import android.content.Context
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.firestore
@@ -31,7 +29,6 @@ class DetailsViewModel(application: Application): AndroidViewModel(application) 
     private val SERVICE_UUID = UUID.fromString("19B10000-E8F2-537E-4F6C-D104768A1214")
     private val SWITCH_UUID = UUID.fromString("19B10001-E8F2-537E-4F6C-D104768A1214")
 
-class DetailsViewModel: ViewModel() {
     private var bluetoothGatt: BluetoothGatt? = null
     private var switchCharacteristic: BluetoothGattCharacteristic? = null
 
@@ -93,6 +90,8 @@ class DetailsViewModel: ViewModel() {
             return ""
         }
         return name
+    }
+
     private val gattCallback = object : BluetoothGattCallback() {
 
         @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
@@ -106,29 +105,6 @@ class DetailsViewModel: ViewModel() {
             val service = gatt.getService(SERVICE_UUID)
             switchCharacteristic = service?.getCharacteristic(SWITCH_UUID)
         }
-    }
-
-    fun fetchLock(id : Int) {
-        lockState.value = Lock(0,"Lock 1", "IN 1.05", true, "")
-        logsState.value = listOf<Log>(
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-            Log("admin", "open", Timestamp.now(),0),
-        )
     }
 
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
