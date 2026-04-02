@@ -1,18 +1,23 @@
 package com.retardero.lockin.app.data
 
 import android.annotation.SuppressLint
+import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.coroutines.coroutineContext
 
 data class Log(
-    val doer: String,
-    val action: String,
-    val timestamp: Timestamp,
-    val lockId: Int
+    val accountId: String = "",
+    val action: String = "",
+    val timestamp: Timestamp = Timestamp.now(),
+    val lockId: String
 ) {
     override fun toString(): String {
-        return "${doer} - ${getDateTime(timestamp)} : ${action}"
+        return "User - ${getDateTime(timestamp)} : ${action}"
     }
 
     @SuppressLint("SimpleDateFormat")

@@ -23,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -33,6 +37,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.retardero.lockin.app.widgets.LockWidget
 import com.retardero.lockin.destinations.DetailsScreenDestination
 import com.retardero.lockin.lockList.domain.LockListViewModel
+import com.retardero.lockin.lockList.presentation.widget.LockCreationMenu
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination()
@@ -40,15 +46,19 @@ import com.retardero.lockin.lockList.domain.LockListViewModel
 fun LockListScreen(navigator: DestinationsNavigator, viewModel: LockListViewModel = viewModel()) {
     val locks by viewModel.locks.collectAsState()
 
+    var showAddLockDialog by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
-        viewModel.fetchLocks()
+        viewModel.fetchAllLocks()
     }
 
     Scaffold (
         floatingActionButton = {
             FloatingActionButton(
                 shape = RoundedCornerShape(25),
-                onClick = { viewModel.addLock() }
+                onClick = { showAddLockDialog = true }
             ) {
                 Icon(
                     Icons.Default.Add,
@@ -69,8 +79,19 @@ fun LockListScreen(navigator: DestinationsNavigator, viewModel: LockListViewMode
             items(locks) { lock ->
                 Spacer(modifier = Modifier.height(8.dp))
                 LockWidget(lock,
-                    { navigator.navigate(DetailsScreenDestination()) })
+                    { navigator.navigate(DetailsScreenDestination(lock.id)) })
             }
         }
+    }
+    if (showAddLockDialog) {
+        LockCreationMenu(
+            onDismiss = { showAddLockDialog = false },
+            onSave = { newLock ->
+                coroutineScope.launch {
+                    viewModel.saveLock(newLock)
+                    viewModel.fetchAllLocks()
+                }
+            }
+        )
     }
 }

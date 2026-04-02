@@ -18,6 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,25 +31,31 @@ import com.retardero.lockin.app.widgets.LockWidget
 import com.retardero.lockin.app.widgets.TopBar
 import com.retardero.lockin.details.domain.DetailsViewModel
 import com.retardero.lockin.details.presentation.widgets.History
+import com.retardero.lockin.details.presentation.widgets.LockModificationMenu
+import com.retardero.lockin.lockList.presentation.widget.LockCreationMenu
 import com.retardero.lockin.login.domain.LoginViewModel
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Destination()
 @Composable
-fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel = viewModel()) {
+fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel = viewModel(), lockId : String) {
     val lock by viewModel.lock.collectAsState()
     val logs by viewModel.logs.collectAsState()
 
+    var showModifyLockDialog by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         viewModel.connectToDevice();
-        viewModel.fetchLock(-1)
+        viewModel.fetchLock(lockId)
     }
 
     Scaffold (
         topBar = {
             TopBar(
                 popBack = { navigator.popBackStack() },
-                settings = {}
+                settings = { showModifyLockDialog=true }
             )
         },
 
@@ -64,5 +74,17 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
             Spacer(modifier = Modifier.height(16.dp))
             History(logs, lock)
         }
+    }
+    if (showModifyLockDialog) {
+        LockModificationMenu(
+            onDismiss = { showModifyLockDialog = false },
+            onSave = { newLock ->
+                coroutineScope.launch {
+                    viewModel.modifyLockInfo(newLock)
+                    viewModel.fetchLock(lockId)
+                }
+            },
+            lock = lock
+        )
     }
 }

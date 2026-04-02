@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.retardero.lockin.app.data.Lock
+import com.retardero.lockin.app.data.User
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlin.random.Random
 
 class LockListViewModel:ViewModel() {
@@ -18,32 +20,30 @@ class LockListViewModel:ViewModel() {
     val error: StateFlow<String?> = _error.asStateFlow()
 
     val db = Firebase.firestore
+    private val locksCollection = db.collection("locks")
 
-    val random = Random(10)
+    suspend fun fetchAllLocks() {
+        try {
+            val snapshot = locksCollection.get().await()
 
-    fun fetchLocks() {
-        locksState.value = listOf<Lock>(Lock(0,"Lock 1", "IN 1.05", true, ""),
-            Lock(1,"Lock 2", "IN 1.06", false, ""),
-            Lock(2,"Lock 3", "2.02", true, ""))
-        /*viewModelScope.launch {
-            val response = CardRacterRepository.getAllMultiCategoryCards()
+            locksState.value = emptyList()
 
-            when(response) {
-                is Resource.Success -> {
-                    println("SUCESS")
-                    cardsState.value =  response.data
-                }
-                is Resource.Error -> {
-                    println("ERROR")
-                    _error.value = response.error
-                }
+            snapshot.documents.mapNotNull { doc ->
+                println(doc.data)
+                locksState.value = locksState.value.plus(doc.toObject(Lock::class.java)!!)
             }
-        }*/
+        } catch (e: Exception) {
+            println(e)
+        }
     }
 
-    fun addLock() {
-        var prev = locksState.value.toMutableList()
-        prev.add(Lock(locksState.value.size, ("Lock" + random.nextInt().toString()), "No place defined", random.nextBoolean(), ""))
-        locksState.value = prev
+    suspend fun saveLock(lock: Lock) : Boolean {
+        return try {
+            locksCollection.document(lock.id).set(lock).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }

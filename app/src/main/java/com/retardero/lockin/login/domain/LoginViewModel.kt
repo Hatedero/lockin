@@ -14,12 +14,18 @@ import com.google.firebase.firestore.firestore
 import com.retardero.lockin.app.data.User
 import com.retardero.lockin.app.repositories.AuthRepository
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginViewModel(private val repository: AuthRepository): ViewModel() {
     var uiState by mutableStateOf<AuthState>(AuthState.Idle)
         private set
+    
+    var user by mutableStateOf<User?>(
+        value = null
+    )
 
     val db = Firebase.firestore
+    private val usersCollection = db.collection("users")
 
     fun onSignInClick(activity: Activity) {
         uiState = AuthState.Loading
@@ -27,11 +33,11 @@ class LoginViewModel(private val repository: AuthRepository): ViewModel() {
             val result = repository.signInWithGoogle(activity)
 
             if (result.isSuccess) {
-                println("YAHOU")
-                if(getUser(FirebaseAuth.getInstance().currentUser?.uid ?: "-1"))
+                user = getUserProfile(FirebaseAuth.getInstance().currentUser?.uid ?: "-1")
+                if(user != null)
                     uiState = AuthState.Success(result.getOrNull()?.user)
                 else
-                    createUser(User(FirebaseAuth.getInstance().currentUser?.uid ?: "-1", "Michelin"))
+                    saveUser(User(FirebaseAuth.getInstance().currentUser?.uid ?: "-1", "Michelin"))
             } else {
                 val error = result.exceptionOrNull()
                 error?.printStackTrace()
@@ -41,32 +47,23 @@ class LoginViewModel(private val repository: AuthRepository): ViewModel() {
         }
     }
 
-    fun getUser(UID : String) : Boolean {
-        if(UID.equals("-1"))
-            return false
-        println("GETTING USER FROM FIREBASE")
-        db.collection("user")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    Log.d("Firestore", "${document.id} => ${document.data}")
-                }
-            }
-        return false
+    suspend fun getUserProfile(uid: String): User? {
+        return try {
+            val snapshot = usersCollection.document(uid).get().await()
+            snapshot.toObject(User::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
 
-    fun createUser(user : User) {
-        if(user.UID.equals("-1"))
-            return
-        println("CREATING USER IN FIREBASE")
-        db.collection("user")
-            .add(user)
-            .addOnSuccessListener { documentReference ->
-                Log.d("Firestore", "Document added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w("Firestore", "Error adding document", e)
-            }
+    suspend fun saveUser(user: User): Boolean {
+        return try {
+            usersCollection.document(user.uid).set(user).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }
 
