@@ -78,8 +78,15 @@ class DetailsViewModel: ViewModel() {
         return name
     }
 
-    fun changeLockState() {
-        lockState.value = lockState.value.copy(status = !lockState.value.status)
-        println(if (lockState.value.status) "OPEN LOCK" else "CLOSE LOCK")
+    suspend fun changeLockState() : Boolean {
+        var modifiedLock : Lock = lockState.value
+        modifiedLock = modifiedLock.copy(status = !modifiedLock.status)
+        return try {
+            locksCollection.document(modifiedLock.id).set(modifiedLock).await()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
     }
 }

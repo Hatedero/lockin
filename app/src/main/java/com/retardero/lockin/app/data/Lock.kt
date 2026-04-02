@@ -5,5 +5,6 @@ data class Lock(
     val name: String = "",
     val location: String = "",
     val status: Boolean = false,
-    val password: String = ""
+    val password: String = "",
+    val mac: String = ""
 )

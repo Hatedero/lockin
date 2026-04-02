@@ -1,5 +1,6 @@
 package com.retardero.lockin.lockList.presentation.widget
 
+import android.net.wifi.WifiInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -70,7 +71,8 @@ fun LockCreationMenu(
                         name = name,
                         location = location,
                         password = password,
-                        status = false
+                        status = false,
+                        mac = "02:00:00:00:00:00"
                     )
                     onSave(newLock)
                     onDismiss()

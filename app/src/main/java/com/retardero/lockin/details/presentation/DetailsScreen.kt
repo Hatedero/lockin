@@ -67,7 +67,10 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
             LockWidget(
                 lock = lock,
                 onClick = {
-                    viewModel.changeLockState()
+                    coroutineScope.launch {
+                        viewModel.changeLockState()
+                        viewModel.fetchLock(lockId)
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
