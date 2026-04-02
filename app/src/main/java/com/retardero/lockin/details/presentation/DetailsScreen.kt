@@ -37,6 +37,7 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
     val logs by viewModel.logs.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.connectToDevice();
         viewModel.fetchLock(-1)
     }
 
