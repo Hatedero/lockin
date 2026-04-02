@@ -1,6 +1,7 @@
 package com.retardero.lockin.details.domain
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
@@ -11,7 +12,9 @@ import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.annotation.RequiresPermission
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
@@ -28,9 +31,12 @@ import java.util.UUID
 class DetailsViewModel(application: Application): AndroidViewModel(application) {
     private val SERVICE_UUID = UUID.fromString("19B10000-E8F2-537E-4F6C-D104768A1214")
     private val SWITCH_UUID = UUID.fromString("19B10001-E8F2-537E-4F6C-D104768A1214")
+    private val MOVEMENT_UUID = UUID.fromString("19B10002-E8F2-537E-4F6C-D104768A1214")
+    private val PASSWORD_UUID = UUID.fromString("19B10003-E8F2-537E-4F6C-D104768A1214")
 
     private var bluetoothGatt: BluetoothGatt? = null
     private var switchCharacteristic: BluetoothGattCharacteristic? = null
+    private var passwordCharacteristic: BluetoothGattCharacteristic? = null
 
     private val bluetoothManager = application.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 
@@ -48,6 +54,11 @@ class DetailsViewModel(application: Application): AndroidViewModel(application) 
 
     val db = Firebase.firestore
     private val locksCollection = db.collection("locks")
+
+    val hasPermission = ContextCompat.checkSelfPermission(
+        getApplication(),
+        Manifest.permission.BLUETOOTH_SCAN
+    ) == PackageManager.PERMISSION_GRANTED
 
     suspend fun fetchLock(lockId : String) {
         try {
@@ -92,27 +103,47 @@ class DetailsViewModel(application: Application): AndroidViewModel(application) 
         return name
     }
 
+    @SuppressLint("MissingPermission")
+    private fun sendPassword(password: Int = 1234) {
+        val characteristic = passwordCharacteristic ?: return
+
+        val buffer = ByteArray(4)
+        buffer[0] = (password shr 24).toByte()
+        buffer[1] = (password shr 16).toByte()
+        buffer[2] = (password shr 8).toByte()
+        buffer[3] = password.toByte()
+
+        characteristic.value = buffer
+
+        bluetoothGatt?.writeCharacteristic(characteristic)
+    }
+
     private val gattCallback = object : BluetoothGattCallback() {
 
-        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+        @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 gatt.discoverServices()
             }
         }
 
+        @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             val service = gatt.getService(SERVICE_UUID)
             switchCharacteristic = service?.getCharacteristic(SWITCH_UUID)
+            passwordCharacteristic = service?.getCharacteristic(PASSWORD_UUID)
+            sendPassword()
+            sendPassword()
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
     fun changeLockState() {
-        lockState.value = lockState.value.copy(status = !lockState.value.status)
+        sendPassword()
         val characteristic = switchCharacteristic ?: return
-
-        characteristic.value = byteArrayOf(if (lockState.value.status) 1 else 0)
+        
+        characteristic.value = byteArrayOf(if (!lockState.value.status) 1 else 0)
+        lockState.value = lockState.value.copy(status = !lockState.value.status)
 
         bluetoothGatt?.writeCharacteristic(characteristic)
         println(if (lockState.value.status) "OPEN LOCK" else "CLOSE LOCK")

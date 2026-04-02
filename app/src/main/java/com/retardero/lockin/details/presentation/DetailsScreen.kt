@@ -2,18 +2,11 @@ package com.retardero.lockin.details.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,11 +25,17 @@ import com.retardero.lockin.app.widgets.TopBar
 import com.retardero.lockin.details.domain.DetailsViewModel
 import com.retardero.lockin.details.presentation.widgets.History
 import com.retardero.lockin.details.presentation.widgets.LockModificationMenu
-import com.retardero.lockin.lockList.presentation.widget.LockCreationMenu
-import com.retardero.lockin.login.domain.LoginViewModel
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition",
+    "MissingPermission"
+)
 @Destination()
 @Composable
 fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel = viewModel(), lockId : String) {
@@ -46,9 +45,34 @@ fun DetailsScreen(navigator: DestinationsNavigator, viewModel: DetailsViewModel 
     var showModifyLockDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions.values.all { it }
+
+        if (granted){
+            viewModel.connectToDevice()
+        } else {
+            print("ACCEPT THE F*cking permissions")
+        }
+    }
+
     LaunchedEffect(Unit) {
-        viewModel.connectToDevice();
-        viewModel.fetchLock(lockId)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                )
+            )
+            viewModel.fetchLock(lockId)
+        } else {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            )
+        }
     }
 
     Scaffold (
